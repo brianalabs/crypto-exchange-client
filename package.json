@@ -1,6 +1,7 @@
 {
   "name": "node-upbit",
-  "version": "0.0.1",
+  "description": "Node.js client for using Upbit API",
+  "version": "0.0.4",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -10,7 +11,8 @@
   "scripts": {
     "dev": "ts-node test.ts",
     "start": "node dist/test.js",
-    "build": "rimraf dist && node_modules/.bin/tsc"
+    "build": "rimraf dist && node_modules/.bin/tsc",
+    "publish": "npm publish"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^8.5.0",
@@ -23,6 +25,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "dayjs": "^1.10.3",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
     "querystring": "^0.2.0",
