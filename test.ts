@@ -16,16 +16,15 @@ async function Init() {
     // await upbit.GetCandleByMinute({ count: 200, unit: 15, market: 'KRW-BTC', to: dayjs().subtract(3, 'day').format('YYYY-MM-DDTHH:mm:ss.SSSZ') }) // '2021-01-01T09:00:00.000+00:00'
 
     // const order = await upbit.Order({ market: 'KRW-BTC', side: 'ask', volume: '10', ord_type: 'market' })
-    // await upbit.GetOrder('9ca023a5-851b-4fec-9f0a-48cd83c2eaae')
+    await upbit.GetOrder('9ca023a5-851b-4fec-9f0a-48cd83c2eaae')
     // await upbit.GetOrders({ state: 'done' })
     // await upbit.GetTickers(['KRW-BTC', 'KRW-AHT'])
 
-    await upbit.GetTrades({ market: 'KRW-AHT', count: 5 })
+    // await upbit.GetTrades({ market: 'KRaW-AHT', count: 5 })
 
     /** In Progress */
   } catch (err) {
-    console.log(`[ERROR]`)
-    console.log(err.response.data)
+    console.log(`[ERROR]`, err)
   }
 }
 

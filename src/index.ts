@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios'
 import jwt from 'jsonwebtoken'
 import qs from 'querystring'
 import crypto from 'crypto'
@@ -185,15 +185,18 @@ export class Upbit {
 
       return value
     })
-    this.http.interceptors.response.use((value: AxiosResponse) => {
-      if (value.status < 400) {
-        console.log(`\n[HTTP Response information] ${value.status}`)
-        console.log(value.data)
-
-        return value.data
+    this.http.interceptors.response.use(
+      (value: AxiosResponse) => {
+        
+      return value.data
+    }, 
+    (err: AxiosError) => {
+      
+      if (err.response?.data) {
+        throw err.response.data.error
       }
 
-      return value
+      throw err
     })
   }
 
@@ -204,15 +207,7 @@ export class Upbit {
     }
 
     if (data) {
-
-      // const arrays = Object.values(data).filter((value, index) => {
-      //   console.log(value)
-      //   return Array.isArray(value)
-      // })
-
-      // arrays.map(array => `uuids[]=${uuid}`).join('&')
-
-      const query = qs.encode(data)
+      const query = qs.stringify(data)
       const queryHash = crypto.createHash('sha512').update(query, 'utf-8').digest('hex')
 
       payload.query_hash = queryHash
