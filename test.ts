@@ -1,4 +1,5 @@
 import 'dotenv/config'
+// import { Upbit } from './dist'
 import { Upbit } from './src'
 
 async function Init() {
@@ -14,9 +15,24 @@ async function Init() {
     //     ord_type: 'limit',
     // }
 
-    const { data } = await upbit.GetCandle({ count: 10, unit: 3, market: 'KRW-BTC', to: '2021-01-01T09:00:00.000+00:00' })
-    // const { data } = await upbit.Order({ market: 'KRW_BTC', side: 'bid', price:  '100', volumne: '0.01', ord_type: 'limit' })
-    console.log({ data })
+    /** Done */
+    // const coinAddresses = await upbit.GetDepositsCoinAddresses()
+    // const accounes = await upbit.GetAccounts()
+    // const order = await upbit.GetOrderChance({ market: 'KRW-BTC' })
+    
+    // const wallet = await upbit.GetStatusWallet()
+    
+    // const { data } = await upbit.GetCandle({ count: 10, unit: 3, market: 'KRW-BTC', to: '2021-01-01T09:00:00.000+00:00' })
+    // const { data } = await upbit.GetStatusWallet()
+  
+    // const order = await upbit.Order({ market: 'KRW-AHT', side: 'ask', volume: '10', ord_type: 'market' })
+    
+    // console.log(data.)
+    // const { data } = await upbit.GetMarketCode()
+    // data.forEach(item => console.log(item))
+
+    /** In Progress */
+    // console.log(data)
   } catch (err) {
     console.log(`[ERROR]`)
     console.log(err.response.data)
