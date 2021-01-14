@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import jwt from 'jsonwebtoken'
 import qs from 'querystring'
 import crypto from 'crypto'
@@ -12,11 +12,11 @@ interface UpbitTokenParams {
 }
 
 export interface UpbitAccount {
-  currency: string 
-  balance: string 
-  locked: string 
-  avg_buy_price: string 
-  avg_buy_price_medofied: boolean 
+  currency: string
+  balance: string
+  locked: string
+  avg_buy_price: string
+  avg_buy_price_medofied: boolean
   unit_currency: string
 }
 
@@ -39,7 +39,6 @@ export interface UpbitDepositsCoinAddress {
   deposit_address: string
   secondary_address?: string
 }
-
 
 export interface UpbitOrderChance {
   bid_fee: string
@@ -100,7 +99,7 @@ export interface UpbitOrder {
 export interface UpbitOrderDetail extends UpbitOrder {
   trades: [
     {
-      market: string 
+      market: string
       uuid: string
       price: string
       volume: string
@@ -112,8 +111,8 @@ export interface UpbitOrderDetail extends UpbitOrder {
 
 export interface UpbitCandle {
   market: string
-  candle_date_time_utc: string 
-  candle_date_time_kst: string 
+  candle_date_time_utc: string
+  candle_date_time_kst: string
   opening_price: number
   high_price: number
   low_price: number
@@ -171,39 +170,34 @@ export class Upbit {
   private readonly secret_key: string
   private http: AxiosInstance
 
-  constructor(auth: { access_key: string, secret_key: string }) {
+  constructor(auth: { access_key: string; secret_key: string }) {
     this.access_key = auth.access_key
     this.secret_key = auth.secret_key
-    
+
+    /** Axios */
     this.http = axios.create({ baseURL: 'https://api.upbit.com' })
     this.http.interceptors.request.use((value: AxiosRequestConfig) => {
-      const token = value.data ? 
-        this.GenerateToken(value.data) : 
-        this.GenerateToken()
-
+      const token = value.data ? this.GenerateToken(value.data) : this.GenerateToken()
       value.headers['Authorization'] = `Bearer ${token}`
 
       return value
     })
     this.http.interceptors.response.use(
-      (value: AxiosResponse) => {
-        
-      return value.data
-    }, 
-    (err: AxiosError) => {
-      
-      if (err.response?.data) {
-        throw err.response.data.error
-      }
+      (res: AxiosResponse) => res.data,
+      (err: AxiosError) => {
+        if (err.response?.data) {
+          throw err.response.data.error
+        }
 
-      throw err
-    })
+        throw err
+      }
+    )
   }
 
   private GenerateToken(data?: { [key: string]: any }): string {
     const payload: UpbitTokenParams = {
       access_key: this.access_key,
-      nonce: uuidv4(),
+      nonce: uuidv4()
     }
 
     if (data) {
@@ -222,9 +216,9 @@ export class Upbit {
    * @example
    * const upbit = new Upbit({ ... })
    * const keys = await upbit.GetApiKeys()
-   * 
+   *
    */
-  public GetApiKeys(): Promise<{ access_key: string, expire_at: string }[]> {
+  public GetApiKeys(): Promise<{ access_key: string; expire_at: string }[]> {
     return this.http.get('/v1/api_keys')
   }
 
@@ -258,17 +252,19 @@ export class Upbit {
   public GetStatusWallet(): Promise<UpbitWalletStatus[]> {
     return this.http.get('/v1/status/wallet')
   }
-  
+
   /**
    * @description 전체 입금 주소 조회 - 내가 보유한 자산 리스트를 보여줍니다.
    * @example
    * const upbit = new Upbit({ ... })
    * const addresses = await upbit.GetDepositsCoinAddresses()
    * const address = await upbit.GetDepositsCoinAddresses({ currency: 'BTC' })
-   * 
+   *
    */
   public GetDepositsCoinAddresses(data?: { currency: string }): Promise<UpbitDepositsCoinAddress[]> {
-    return this.http.get('/v1/deposits/coin_addresses?' + qs.stringify(data), { data })
+    return this.http.get('/v1/deposits/coin_addresses?' + qs.stringify(data), {
+      data
+    })
   }
 
   /**
@@ -294,25 +290,25 @@ export class Upbit {
   }
 
   /**
-  * @description 업비트에서 거래 가능한 마켓 목록
-  * @example 
-  * const upbit = new Upbit({ ... })
-  * const accounts = await upbit.GetMarketCode()
-  * [
-  *   { 
-  *     market: 'KRW-BTC', 
-  *     korean_name: '비트코인', 
-  *     english_name: 'Bitcoin'
-  *   }
-  * ]
-  * 
-  * market - 업비트에서 제공중인 시장 정보
-  * 
-  * korean_name - 거래 대상 암호화폐 한글명
-  * 
-  * english_name - 거래 대상 암호화폐 영문명
-  */
-  public GetMarketCodes(): Promise<UpbitMarketCode[]> { 
+   * @description 업비트에서 거래 가능한 마켓 목록
+   * @example
+   * const upbit = new Upbit({ ... })
+   * const accounts = await upbit.GetMarketCode()
+   * [
+   *   {
+   *     market: 'KRW-BTC',
+   *     korean_name: '비트코인',
+   *     english_name: 'Bitcoin'
+   *   }
+   * ]
+   *
+   * market - 업비트에서 제공중인 시장 정보
+   *
+   * korean_name - 거래 대상 암호화폐 한글명
+   *
+   * english_name - 거래 대상 암호화폐 영문명
+   */
+  public GetMarketCodes(): Promise<UpbitMarketCode[]> {
     return this.http.get('/v1/market/all')
   }
 
@@ -320,9 +316,15 @@ export class Upbit {
    * @description 주문하기
    * const upbit = new Upbit({ ... })
    * const order = await upbit.Order({ market: 'KRW-BTC', side: 'ask', volume: '0.01', price: '100, ord_type: 'limit' })
-   * 
+   *
    */
-  public Order(data: { market: string, side: 'bid' | 'ask', volume: string, price?: string, ord_type: 'limit' | 'price' | 'market' }): Promise<UpbitOrder> {
+  public Order(data: {
+    market: string
+    side: 'bid' | 'ask'
+    volume: string
+    price?: string
+    ord_type: 'limit' | 'price' | 'market'
+  }): Promise<UpbitOrder> {
     return this.http.post('/v1/orders', { data })
   }
 
@@ -367,7 +369,9 @@ export class Upbit {
       ask_account.unit_currency	평단가 기준 화폐	String
    */
   public GetOrderChance(market: string): Promise<UpbitOrderChance> {
-    return this.http.get('/v1/orders/chance?' + qs.stringify({ market }), { data: { market } })
+    return this.http.get('/v1/orders/chance?' + qs.stringify({ market }), {
+      data: { market }
+    })
   }
 
   /**
@@ -378,7 +382,9 @@ export class Upbit {
    * const order = await upbit.Order({ market: 'KRW-BTC', side: 'ask', volume: '0.01', price: '100, ord_type: 'limit' })
    */
   public GetOrder(uuid: string): Promise<UpbitOrderDetail> {
-    return this.http.get(`/v1/order?` + qs.stringify({ uuid }), { data: { uuid } })
+    return this.http.get(`/v1/order?` + qs.stringify({ uuid }), {
+      data: { uuid }
+    })
   }
 
   /**
@@ -402,11 +408,17 @@ export class Upbit {
       - asc : 오름차순
       - desc : 내림차순 (default)	String
    */
-  public GetOrders(data?: { /** uuids?: string[], */ state?: 'wait' | 'done' | 'cancel', kind?: 'normal' | 'watch', page?: number, limit?: number, order_by?: 'asc' | 'desc' }): Promise<UpbitOrder> {
+  public GetOrders(data?: {
+    /** uuids?: string[], */ state?: 'wait' | 'done' | 'cancel'
+    kind?: 'normal' | 'watch'
+    page?: number
+    limit?: number
+    order_by?: 'asc' | 'desc'
+  }): Promise<UpbitOrder> {
     return this.http.get('/v1/orders?' + qs.stringify(data), { data })
   }
 
-  public GetCandleByMinute(data: { market: string, unit?: number, to?: string, count?: number }): Promise<UpbitCandle[]> {
+  public GetCandleByMinute(data: { market: string; unit?: number; to?: string; count?: number }): Promise<UpbitCandle[]> {
     const payload: { [key: string]: any } = {
       market: data.market,
       count: data.count || 1
@@ -429,11 +441,7 @@ export class Upbit {
         throw new Error('Invalid count.')
       }
     }
-    if (data.to) [
-      payload.to = data.to
-    ]
-
-    delete data.unit
+    if (data.to) [(payload.to = data.to)]
 
     return this.http.get(`/v1/candles/minutes/${data.unit || 1}?${qs.stringify(data)}`, { data })
   }
@@ -441,7 +449,7 @@ export class Upbit {
   /**
    * @description 최근 체결 내역
    */
-  public GetTrades(data: { market: string, count?: number }): Promise<UpbitTrade[]> {
+  public GetTrades(data: { market: string; count?: number }): Promise<UpbitTrade[]> {
     return this.http.get('/v1/trades/ticks?' + qs.stringify(data), { data })
   }
 
@@ -449,9 +457,11 @@ export class Upbit {
    * @description 현재가 정보 - 요청 당시 종목의 스냅샷을 반환한다.
    * @param markets 마켓명의 배열
    * @example
-   * 
+   *
    */
   public GetTickers(markets: string[]): Promise<UpbitTicker[]> {
-    return this.http.get(`/v1/ticker?markets=${markets.join()}`, { data: { markets: markets.join() } })
+    return this.http.get(`/v1/ticker?markets=${markets.join()}`, {
+      data: { markets: markets.join() }
+    })
   }
 }
