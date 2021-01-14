@@ -13,7 +13,7 @@ async function Init() {
   try {
     const upbit = new Upbit({
       access_key: process.env.UPBIT_ACCESS_KEY as string,
-      secret_key: process.env.UPBIT_SECRET_KEY as string,
+      secret_key: process.env.UPBIT_SECRET_KEY as string
       // slack_bot_user_oauth_access_token: process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN as string
     })
 
@@ -26,7 +26,7 @@ async function Init() {
     const candles = await upbit.GetCandleByMinute({
       market: 'KRW-BTC',
       unit: 1,
-      count: 30,
+      count: 30
       // to: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
     })
     Log(candles)
