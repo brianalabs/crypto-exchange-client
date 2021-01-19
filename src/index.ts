@@ -1,235 +1,222 @@
-import axios, {
-  AxiosError,
-  AxiosInstance,
-  AxiosPromise,
-  AxiosRequestConfig,
-  AxiosResponse,
-} from "axios";
-import jwt from "jsonwebtoken";
-import qs from "querystring";
-import crypto from "crypto";
-import WebSocket from "ws";
-import { v4 as uuidv4 } from "uuid";
-import { UpbitSocket } from "./socket";
+import axios, { AxiosError, AxiosInstance, AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios'
+import jwt from 'jsonwebtoken'
+import qs from 'querystring'
+import crypto from 'crypto'
+import WebSocket from 'ws'
+import { v4 as uuidv4 } from 'uuid'
+import { UpbitSocket } from './socket'
 
 interface UpbitTokenParams {
-  access_key: string;
-  nonce: string;
-  query_hash?: string;
-  query_hash_alg?: "SHA512";
+  access_key: string
+  nonce: string
+  query_hash?: string
+  query_hash_alg?: 'SHA512'
 }
 
 export interface UpbitAccount {
-  currency: string;
-  balance: string;
-  locked: string;
-  avg_buy_price: string;
-  avg_buy_price_medofied: boolean;
-  unit_currency: string;
+  currency: string
+  balance: string
+  locked: string
+  avg_buy_price: string
+  avg_buy_price_medofied: boolean
+  unit_currency: string
 }
 
 export interface UpbitMarketCode {
-  market: string;
-  korean_name: string;
-  english_name: string;
+  market: string
+  korean_name: string
+  english_name: string
 }
 export interface UpbitWalletStatus {
-  currency: string;
-  wallet_state: string;
-  block_state: string;
-  block_height: number;
-  block_updated_at: string;
-  block_elapsed_minutes: number;
+  currency: string
+  wallet_state: string
+  block_state: string
+  block_height: number
+  block_updated_at: string
+  block_elapsed_minutes: number
 }
 
 export interface UpbitDepositsCoinAddress {
-  currency: string;
-  deposit_address: string;
-  secondary_address?: string;
+  currency: string
+  deposit_address: string
+  secondary_address?: string
 }
 
 export interface UpbitOrderChance {
-  bid_fee: string;
-  ask_fee: string;
-  maker_bid_fee: string;
-  maker_ask_fee: string;
+  bid_fee: string
+  ask_fee: string
+  maker_bid_fee: string
+  maker_ask_fee: string
   market: {
-    id: string;
-    name: string;
-    order_types: string[];
-    order_sides: string[];
+    id: string
+    name: string
+    order_types: string[]
+    order_sides: string[]
     bid: {
-      currency: string;
-      price_unit?: string;
-      min_total: number;
-    };
+      currency: string
+      price_unit?: string
+      min_total: number
+    }
     ask: {
-      currency: string;
-      price_unit?: string;
-      min_total: number;
-    };
-  };
+      currency: string
+      price_unit?: string
+      min_total: number
+    }
+  }
   bid_account: {
-    currency: string;
-    balance: string;
-    locked: string;
-    avg_buy_price: string;
-    avg_buy_price_modified: boolean;
-    unit_currency: string;
-  };
+    currency: string
+    balance: string
+    locked: string
+    avg_buy_price: string
+    avg_buy_price_modified: boolean
+    unit_currency: string
+  }
   ask_account: {
-    currency: string;
-    balance: string;
-    locked: string;
-    avg_buy_price: string;
-    avg_buy_price_modified: boolean;
-    unit_currency: string;
-  };
+    currency: string
+    balance: string
+    locked: string
+    avg_buy_price: string
+    avg_buy_price_modified: boolean
+    unit_currency: string
+  }
 }
 
 export interface UpbitOrder {
-  uuid: string;
-  side: string;
-  ord_type: string;
-  price: string;
-  state: string;
-  market: string;
-  created_at: string;
-  volume: string;
-  remaining_volume: string;
-  reserved_fee: string;
-  remaining_fee: string;
-  paid_fee: string;
-  locked: string;
-  executed_volume: string;
-  trades_count: number;
+  uuid: string
+  side: string
+  ord_type: string
+  price: string
+  state: string
+  market: string
+  created_at: string
+  volume: string
+  remaining_volume: string
+  reserved_fee: string
+  remaining_fee: string
+  paid_fee: string
+  locked: string
+  executed_volume: string
+  trades_count: number
 }
 export interface UpbitOrderDetail extends UpbitOrder {
   trades: [
     {
-      market: string;
-      uuid: string;
-      price: string;
-      volume: string;
-      funds: string;
-      side: string;
+      market: string
+      uuid: string
+      price: string
+      volume: string
+      funds: string
+      side: string
     }
-  ];
+  ]
 }
 
 export interface UpbitCandle {
-  market: string;
-  candle_date_time_utc: string;
-  candle_date_time_kst: string;
-  opening_price: number;
-  high_price: number;
-  low_price: number;
-  trade_price: number;
-  timestamp: number;
-  candle_acc_trade_price: number;
-  candle_acc_trade_volume: number;
-  unit: number;
+  market: string
+  candle_date_time_utc: string
+  candle_date_time_kst: string
+  opening_price: number
+  high_price: number
+  low_price: number
+  trade_price: number
+  timestamp: number
+  candle_acc_trade_price: number
+  candle_acc_trade_volume: number
+  unit: number
 }
 
 export interface UpbitTrade {
-  market: string;
-  trade_date_utc: string;
-  trade_time_utc: string;
-  timestamp: number;
-  trade_price: number;
-  trade_volume: number;
-  prev_closing_price: number;
-  change_price: number;
-  ask_bid: string;
-  sequential_id: number;
+  market: string
+  trade_date_utc: string
+  trade_time_utc: string
+  timestamp: number
+  trade_price: number
+  trade_volume: number
+  prev_closing_price: number
+  change_price: number
+  ask_bid: string
+  sequential_id: number
 }
 
 export interface UpbitTicker {
-  market: string;
-  trade_date: string;
-  trade_time: string;
-  trade_date_kst: string;
-  trade_time_kst: string;
-  trade_timestamp: number;
-  opening_price: number;
-  high_price: number;
-  low_price: number;
-  trade_price: number;
-  prev_closing_price: number;
-  change: string;
-  change_price: number;
-  change_rate: number;
-  signed_change_price: number;
-  signed_change_rate: number;
-  trade_volume: number;
-  acc_trade_price: number;
-  acc_trade_price_24h: number;
-  acc_trade_volume: number;
-  acc_trade_volume_24h: number;
-  highest_52_week_price: number;
-  highest_52_week_date: string;
-  lowest_52_week_price: number;
-  lowest_52_week_date: string;
-  timestamp: number;
+  market: string
+  trade_date: string
+  trade_time: string
+  trade_date_kst: string
+  trade_time_kst: string
+  trade_timestamp: number
+  opening_price: number
+  high_price: number
+  low_price: number
+  trade_price: number
+  prev_closing_price: number
+  change: string
+  change_price: number
+  change_rate: number
+  signed_change_price: number
+  signed_change_rate: number
+  trade_volume: number
+  acc_trade_price: number
+  acc_trade_price_24h: number
+  acc_trade_volume: number
+  acc_trade_volume_24h: number
+  highest_52_week_price: number
+  highest_52_week_date: string
+  lowest_52_week_price: number
+  lowest_52_week_date: string
+  timestamp: number
 }
 
 export class Upbit {
-  private readonly access_key: string;
-  private readonly secret_key: string;
-  private http: AxiosInstance;
-  public ws: UpbitSocket;
+  private readonly access_key: string
+  private readonly secret_key: string
+  private http: AxiosInstance
+  public ws: UpbitSocket
 
   constructor(auth: { access_key: string; secret_key: string }) {
     /** Keys */
-    this.access_key = auth.access_key;
-    this.secret_key = auth.secret_key;
+    this.access_key = auth.access_key
+    this.secret_key = auth.secret_key
 
     /** Web Socket */
-    this.ws = new UpbitSocket();
+    this.ws = new UpbitSocket()
 
     /** HTTP Request */
-    this.http = axios.create({ baseURL: "https://api.upbit.com" });
+    this.http = axios.create({ baseURL: 'https://api.upbit.com' })
     this.http.interceptors.request.use((value: AxiosRequestConfig) => {
-      const token = value.data
-        ? this.GenerateToken(value.data)
-        : this.GenerateToken();
+      const token = value.data ? this.GenerateToken(value.data) : this.GenerateToken()
 
-      value.headers["Authorization"] = `Bearer ${token}`;
+      value.headers['Authorization'] = `Bearer ${token}`
 
-      return value;
-    });
+      return value
+    })
     this.http.interceptors.response.use(
-      (value: AxiosResponse) => {
-        return value.data;
-      },
+      (res: AxiosResponse) => res.data,
       (err: AxiosError) => {
         if (err.response?.data) {
-          throw err.response.data.error;
+          throw err.response.data.error
         }
 
-        throw err;
+        throw err
       }
-    );
+    )
   }
 
   private GenerateToken(data?: { [key: string]: any }): string {
     const payload: UpbitTokenParams = {
       access_key: this.access_key,
-      nonce: uuidv4(),
-    };
-
-    if (data) {
-      const query = qs.stringify(data);
-      const queryHash = crypto
-        .createHash("sha512")
-        .update(query, "utf-8")
-        .digest("hex");
-
-      payload.query_hash = queryHash;
-      payload.query_hash_alg = "SHA512";
+      nonce: uuidv4()
     }
 
-    return jwt.sign(payload, this.secret_key);
+    if (data) {
+      const query = qs.stringify(data)
+      const queryHash = crypto.createHash('sha512').update(query, 'utf-8').digest('hex')
+
+      payload.query_hash = queryHash
+      payload.query_hash_alg = 'SHA512'
+    }
+
+    return jwt.sign(payload, this.secret_key)
   }
 
   /**
@@ -240,7 +227,7 @@ export class Upbit {
    *
    */
   public GetApiKeys(): Promise<{ access_key: string; expire_at: string }[]> {
-    return this.http.get("/v1/api_keys");
+    return this.http.get('/v1/api_keys')
   }
 
   /**
@@ -271,7 +258,7 @@ export class Upbit {
      - inactive : 비활성 (점검 등)
    */
   public GetStatusWallet(): Promise<UpbitWalletStatus[]> {
-    return this.http.get("/v1/status/wallet");
+    return this.http.get('/v1/status/wallet')
   }
 
   /**
@@ -282,12 +269,10 @@ export class Upbit {
    * const address = await upbit.GetDepositsCoinAddresses({ currency: 'BTC' })
    *
    */
-  public GetDepositsCoinAddresses(data?: {
-    currency: string;
-  }): Promise<UpbitDepositsCoinAddress[]> {
-    return this.http.get("/v1/deposits/coin_addresses?" + qs.stringify(data), {
-      data,
-    });
+  public GetDepositsCoinAddresses(data?: { currency: string }): Promise<UpbitDepositsCoinAddress[]> {
+    return this.http.get('/v1/deposits/coin_addresses?' + qs.stringify(data), {
+      data
+    })
   }
 
   /**
@@ -309,7 +294,7 @@ export class Upbit {
      unit_currency - 평단가 기준 화폐
    */
   public GetAccounts(): Promise<UpbitAccount[]> {
-    return this.http.get("/v1/accounts");
+    return this.http.get('/v1/accounts')
   }
 
   /**
@@ -332,7 +317,7 @@ export class Upbit {
    * english_name - 거래 대상 암호화폐 영문명
    */
   public GetMarketCodes(): Promise<UpbitMarketCode[]> {
-    return this.http.get("/v1/market/all");
+    return this.http.get('/v1/market/all')
   }
 
   /**
@@ -342,13 +327,13 @@ export class Upbit {
    *
    */
   public Order(data: {
-    market: string;
-    side: "bid" | "ask";
-    volume: string;
-    price?: string;
-    ord_type: "limit" | "price" | "market";
+    market: string
+    side: 'bid' | 'ask'
+    volume: string
+    price?: string
+    ord_type: 'limit' | 'price' | 'market'
   }): Promise<UpbitOrder> {
-    return this.http.post("/v1/orders", { data });
+    return this.http.post('/v1/orders', { data })
   }
 
   /** 
@@ -392,9 +377,9 @@ export class Upbit {
       ask_account.unit_currency	평단가 기준 화폐	String
    */
   public GetOrderChance(market: string): Promise<UpbitOrderChance> {
-    return this.http.get("/v1/orders/chance?" + qs.stringify({ market }), {
-      data: { market },
-    });
+    return this.http.get('/v1/orders/chance?' + qs.stringify({ market }), {
+      data: { market }
+    })
   }
 
   /**
@@ -406,8 +391,8 @@ export class Upbit {
    */
   public GetOrder(uuid: string): Promise<UpbitOrderDetail> {
     return this.http.get(`/v1/order?` + qs.stringify({ uuid }), {
-      data: { uuid },
-    });
+      data: { uuid }
+    })
   }
 
   /**
@@ -432,25 +417,20 @@ export class Upbit {
       - desc : 내림차순 (default)	String
    */
   public GetOrders(data?: {
-    /** uuids?: string[], */ state?: "wait" | "done" | "cancel";
-    kind?: "normal" | "watch";
-    page?: number;
-    limit?: number;
-    order_by?: "asc" | "desc";
+    /** uuids?: string[], */ state?: 'wait' | 'done' | 'cancel'
+    kind?: 'normal' | 'watch'
+    page?: number
+    limit?: number
+    order_by?: 'asc' | 'desc'
   }): Promise<UpbitOrder> {
-    return this.http.get("/v1/orders?" + qs.stringify(data), { data });
+    return this.http.get('/v1/orders?' + qs.stringify(data), { data })
   }
 
-  public GetCandleByMinute(data: {
-    market: string;
-    unit?: number;
-    to?: string;
-    count?: number;
-  }): Promise<UpbitCandle[]> {
+  public GetCandleByMinute(data: { market: string; unit?: number; to?: string; count?: number }): Promise<UpbitCandle[]> {
     const payload: { [key: string]: any } = {
       market: data.market,
-      count: data.count || 1,
-    };
+      count: data.count || 1
+    }
     switch (data?.unit) {
       case 1:
       case 3:
@@ -460,33 +440,25 @@ export class Upbit {
       case 30:
       case 60:
       case 240:
-        break;
+        break
       default:
-        throw new Error("Invalid unit.");
+        throw new Error('Invalid unit.')
     }
     if (data.count) {
       if (data.count > 200) {
-        throw new Error("Invalid count.");
+        throw new Error('Invalid count.')
       }
     }
-    if (data.to) [(payload.to = data.to)];
+    if (data.to) [(payload.to = data.to)]
 
-    delete data.unit;
-
-    return this.http.get(
-      `/v1/candles/minutes/${data.unit || 1}?${qs.stringify(data)}`,
-      { data }
-    );
+    return this.http.get(`/v1/candles/minutes/${data.unit || 1}?${qs.stringify(data)}`, { data })
   }
 
   /**
    * @description 최근 체결 내역
    */
-  public GetTrades(data: {
-    market: string;
-    count?: number;
-  }): Promise<UpbitTrade[]> {
-    return this.http.get("/v1/trades/ticks?" + qs.stringify(data), { data });
+  public GetTrades(data: { market: string; count?: number }): Promise<UpbitTrade[]> {
+    return this.http.get('/v1/trades/ticks?' + qs.stringify(data), { data })
   }
 
   /**
@@ -497,11 +469,7 @@ export class Upbit {
    */
   public GetTickers(markets: string[]): Promise<UpbitTicker[]> {
     return this.http.get(`/v1/ticker?markets=${markets.join()}`, {
-      data: { markets: markets.join() },
-    });
-  }
-
-  public GetDeposits() {
-    return this.http.get(`/`);
+      data: { markets: markets.join() }
+    })
   }
 }
