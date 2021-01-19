@@ -191,7 +191,13 @@ export class Upbit {
       return value
     })
     this.http.interceptors.response.use(
-      (res: AxiosResponse) => res.data,
+      (res: AxiosResponse) => {
+        if (res.headers['remaining-req']) {
+          const remaining_req = res.headers['remaining-req']
+        }
+
+        return res.data
+      },
       (err: AxiosError) => {
         if (err.response?.data) {
           throw err.response.data.error

@@ -17,25 +17,25 @@ async function Init() {
       // slack_bot_user_oauth_access_token: process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN as string
     })
 
-    upbit.ws.Open({ type: 'ticker', codes: ['KRW-BTC'], isOnlySnapshot: true }, () => {
-      console.log('upbit socket connected.')
-    })
+    // upbit.ws.Open({ type: 'ticker', codes: ['KRW-BTC'], isOnlySnapshot: true }, () => {
+    //   console.log('upbit socket connected.')
+    // })
 
-    upbit.ws.OnMessage(data => {
-      console.log(data)
-    })
+    // upbit.ws.OnMessage(data => {
+    //   console.log(data)
+    // })
 
-    upbit.ws.OnClose(() => {
-      console.log('closed.')
-    })
+    // upbit.ws.OnClose(() => {
+    //   console.log('closed.')
+    // })
 
     /** Coin Addresses */
     // const coinAddresses = await upbit.GetDepositsCoinAddresses()
     // console.log(coinAddresses)
 
     /** Accounts */
-    // const accounts = await upbit.GetAccounts()
-    // console.log(accounts)
+    const accounts = await upbit.GetAccounts()
+    console.log(accounts)
 
     /** Market Codes */
     // const marketCodes = await upbit.GetMarketCodes()
