@@ -1,8 +1,10 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios'
 import jwt from 'jsonwebtoken'
 import qs from 'querystring'
 import crypto from 'crypto'
+import WebSocket from 'ws'
 import { v4 as uuidv4 } from 'uuid'
+import { UpbitSocket } from './socket'
 
 interface UpbitTokenParams {
   access_key: string
@@ -169,21 +171,33 @@ export class Upbit {
   private readonly access_key: string
   private readonly secret_key: string
   private http: AxiosInstance
+  public ws: UpbitSocket
 
   constructor(auth: { access_key: string; secret_key: string }) {
+    /** Keys */
     this.access_key = auth.access_key
     this.secret_key = auth.secret_key
 
-    /** Axios */
+    /** Web Socket */
+    this.ws = new UpbitSocket()
+
+    /** HTTP Request */
     this.http = axios.create({ baseURL: 'https://api.upbit.com' })
     this.http.interceptors.request.use((value: AxiosRequestConfig) => {
       const token = value.data ? this.GenerateToken(value.data) : this.GenerateToken()
+
       value.headers['Authorization'] = `Bearer ${token}`
 
       return value
     })
     this.http.interceptors.response.use(
-      (res: AxiosResponse) => res.data,
+      (res: AxiosResponse) => {
+        if (res.headers['remaining-req']) {
+          const remaining_req = res.headers['remaining-req']
+        }
+
+        return res.data
+      },
       (err: AxiosError) => {
         if (err.response?.data) {
           throw err.response.data.error
@@ -223,7 +237,7 @@ export class Upbit {
   }
 
   /**
-   * @description 입출금 현황 - 입출금 현황 및 블록 상태를 조회합니다.
+   * @description 입출금 현황 - 입출금 현황 및 블록 상태를 조회합니다. 입출금 현황 API에서 제공하는 입출금 상태, 블록 상태 정보는 수 분 정도 지연되어 반영될 수 있습니다. 본 API는 참고용으로만 사용하시길 바라며 실제 입출금을 수행하기 전에는 반드시 업비트 공지사항 및 입출금 현황 페이지를 참고해주시기 바랍니다. 
    * @example
    * const upbit = new Upbit({ ... })
    * const wallets = await upbit.GetStatusWallet()
