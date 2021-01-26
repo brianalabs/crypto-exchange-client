@@ -23,7 +23,6 @@ const upbit = new Upbit({
   access_key: '', // required
   secret_key: '', // required
 })
-upbit.Init()
 
 const codes = await upbit.GetMarketCodes()
 // [
