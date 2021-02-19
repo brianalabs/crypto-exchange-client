@@ -1,7 +1,12 @@
 {
   "name": "node-upbit",
   "description": "Node.js client for using Upbit API",
-  "version": "0.0.13",
+  "version": "0.1.0",
+  "author": "Donghyun Kim <peterkimzz69@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peterkimzz/node-upbit.git"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
