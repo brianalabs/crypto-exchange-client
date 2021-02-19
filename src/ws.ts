@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import { isBrowser, isNode } from 'browser-or-node'
 import WebSocket from 'isomorphic-ws'
 
 export interface UpbitSocketPayload {
@@ -101,12 +102,16 @@ export class UpbitWebSocket {
 
   public Open(payload: UpbitSocketPayload, cb?: Function) {
     this.ws.onopen = (e) => {
+      this.ws.send(`${JSON.stringify([{ ticket: uuidv4() }, { ...payload }, { format: 'SIMPLE' }])}`)
+
       if (cb) {
         cb()
       }
-
-      this.ws.send(`${JSON.stringify([{ ticket: uuidv4() }, { ...payload }, { format: 'SIMPLE' }])}`)
     }
+  }
+
+  public Close() {
+    this.ws.close()
   }
 
   public OnClose(cb: Function) {
@@ -116,9 +121,18 @@ export class UpbitWebSocket {
   }
 
   public OnMessage(cb: (data: UpbitSocketSimpleResponse) => void) {
-    this.ws.onmessage = payload => {
-      const response = JSON.parse(payload.data.toString('utf-8'))
-      cb(response)
+    this.ws.onmessage = async payload => {
+      if (isBrowser) {
+        const response = await new Response(payload.data as unknown as Blob).json()
+        cb(response)
+      }
+      else if (isNode) {
+        const response = JSON.parse(payload.data.toString('utf-8'))
+        cb(response)
+      }
+      else {
+        throw Error('Invalid environment.')
+      }
     }
   }
 }
