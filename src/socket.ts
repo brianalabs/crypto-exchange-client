@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import WebSocket from 'ws'
+import WebSocket from 'isomorphic-ws'
 
 export interface UpbitSocketPayload {
   type: 'ticker' | 'trade' | 'orderbook'
@@ -102,26 +102,39 @@ export class UpbitSocket {
   }
 
   public Open(payload: UpbitSocketPayload, cb?: Function) {
-    this.ws.on('open', () => {
+    this.ws.onopen = (e) => {
       if (cb) {
         cb()
       }
 
-      this.ws.send(`${JSON.stringify([{ ticket: uuidv4() }, { ...payload }, { format: 'DEFAULT' }])}`)
-    })
+      this.ws.send(`${JSON.stringify([{ ticket: uuidv4() }, { ...payload }, { format: 'SIMPLE' }])}`)
+    }
+
+    // this.ws.on('open', () => {
+    //   if (cb) {
+    //     cb()
+    //   }
+
+    //   this.ws.send(`${JSON.stringify([{ ticket: uuidv4() }, { ...payload }, { format: 'DEFAULT' }])}`)
+    // })
   }
 
   public OnClose(cb: Function) {
-    this.ws.on('close', () => {
+    this.ws.onclose = () => {
       cb()
-    })
+    }
   }
 
-  public OnMessage(cb: (data: UpbitSocketDefaultResponse) => void) {
-    this.ws.on('message', data => {
-      const decoded: UpbitSocketDefaultResponse = JSON.parse(data.toString('utf-8'))
+  public OnMessage(cb: (data: UpbitSocketSimpleResponse) => void) {
+    this.ws.onmessage = payload => {
+      const response = JSON.parse(payload.data.toString('utf-8'))
+      cb(response)
+    }
 
-      cb(decoded)
-    })
+    // this.ws.on('message', data => {
+    //   const decoded: UpbitSocketDefaultResponse = JSON.parse(data.toString('utf-8'))
+
+    //   cb(decoded)
+    // })
   }
 }

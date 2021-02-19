@@ -14,7 +14,13 @@ async function Init() {
     const upbit = new Upbit({
       access_key: process.env.UPBIT_ACCESS_KEY as string,
       secret_key: process.env.UPBIT_SECRET_KEY as string
-      // slack_bot_user_oauth_access_token: process.env.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN as string
+    })
+
+    upbit.ws.Open({ type: 'ticker', codes: ['KRW-SRN'] }, () => {
+      console.log('opened')
+    })
+    upbit.ws.OnMessage(data => {
+      console.log(data)
     })
 
     // upbit.ws.Open({ type: 'ticker', codes: ['KRW-BTC'], isOnlySnapshot: true }, () => {
@@ -34,8 +40,8 @@ async function Init() {
     // console.log(coinAddresses)
 
     /** Accounts */
-    const accounts = await upbit.GetAccounts()
-    console.log(accounts)
+    // const accounts = await upbit.GetAccounts()
+    // console.log(accounts)
 
     /** Market Codes */
     // const marketCodes = await upbit.GetMarketCodes()

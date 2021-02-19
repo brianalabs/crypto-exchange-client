@@ -2,7 +2,6 @@ import axios, { AxiosError, AxiosInstance, AxiosPromise, AxiosRequestConfig, Axi
 import jwt from 'jsonwebtoken'
 import qs from 'querystring'
 import crypto from 'crypto'
-import WebSocket from 'ws'
 import { v4 as uuidv4 } from 'uuid'
 import { UpbitSocket } from './socket'
 

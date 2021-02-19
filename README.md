@@ -1,6 +1,8 @@
-# Node.js Client for Upbit API
+# Javascript Client for Upbit API
 
-Node.js client for using Upbit API. **TypeScript Supported**.
+Javascript client for using Upbit API. **TypeScript Supported**.
+
+ES6+ Browser and Node.js both are supported.
 
 ## Installation
 
