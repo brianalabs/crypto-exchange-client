@@ -92,10 +92,8 @@ export interface UpbitSocketSimpleResponse {
   호가 (스냅샷, 실시간 정보 제공)
  */
 
-export type UpbitSocketType = 'ticker' | 'trade' | 'orderbook'
-
-export class UpbitSocket {
-  private ws: WebSocket
+export class UpbitWebSocket {
+  public ws: WebSocket
 
   constructor() {
     this.ws = new WebSocket('wss://api.upbit.com/websocket/v1')
@@ -109,14 +107,6 @@ export class UpbitSocket {
 
       this.ws.send(`${JSON.stringify([{ ticket: uuidv4() }, { ...payload }, { format: 'SIMPLE' }])}`)
     }
-
-    // this.ws.on('open', () => {
-    //   if (cb) {
-    //     cb()
-    //   }
-
-    //   this.ws.send(`${JSON.stringify([{ ticket: uuidv4() }, { ...payload }, { format: 'DEFAULT' }])}`)
-    // })
   }
 
   public OnClose(cb: Function) {
@@ -130,11 +120,5 @@ export class UpbitSocket {
       const response = JSON.parse(payload.data.toString('utf-8'))
       cb(response)
     }
-
-    // this.ws.on('message', data => {
-    //   const decoded: UpbitSocketDefaultResponse = JSON.parse(data.toString('utf-8'))
-
-    //   cb(decoded)
-    // })
   }
 }

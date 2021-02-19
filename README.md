@@ -7,8 +7,8 @@ ES6+ Browser and Node.js both are supported.
 ## Installation
 
 ```bash
-$ yarn add node-upbit
-# npm i node-upbit
+$ yarn add upbit-client
+# npm i upbit-client
 ```
 
 ## Requirements
@@ -22,7 +22,7 @@ Visit [here](https://upbit.com/service_center/open_api_guide?__cf_chl_jschl_tk__
 ### HTTP Request
 
 ```js
-import { Upbit } from 'node-upbit'
+import { Upbit } from 'upbit-client'
 const upbit = new Upbit({ 
   access_key: '', // required
   secret_key: '', // required
@@ -42,18 +42,18 @@ const codes = await upbit.GetMarketCodes()
 ### WebSocket
 
 ```js
-import { Upbit } from 'node-upbit'
-const upbit = new Upbit({ access_key: '', secret_key: '' })
+import { UpbitWebSocket } from 'upbit-client'
+const upbit_ws = new UpbitWebSocket()
 
-upbit.ws.Open({ type: "ticker", codes: ["KRW-BTC"] }, () => {
+upbit_ws.Open({ type: "ticker", codes: ["KRW-BTC"] }, () => {
   console.log("upbit socket connected.");
 });
 
-upbit.ws.OnClose(() => {
+upbit_ws.OnClose(() => {
   console.log("closed.");
 });
 
-upbit.ws.OnMessage((data) => {
+upbit_ws.OnMessage((data) => {
   console.log(data)
   // {
   //   ty: 'ticker',

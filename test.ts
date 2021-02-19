@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import { Upbit } from './src'
+import { Upbit, UpbitWebSocket } from './src'
 import dayjs from 'dayjs'
 import { Table } from 'console-table-printer'
 
@@ -16,22 +16,27 @@ async function Init() {
       secret_key: process.env.UPBIT_SECRET_KEY as string
     })
 
-    upbit.ws.Open({ type: 'ticker', codes: ['KRW-SRN'] }, () => {
+    const marketCodes = await upbit.GetMarketCodes()
+    const codes = marketCodes.map((code) => code.market)
+
+    const upbit_ws = new UpbitWebSocket()
+
+    upbit_ws.Open({ type: 'ticker', codes }, () => {
       console.log('opened')
     })
-    upbit.ws.OnMessage(data => {
+    upbit_ws.OnMessage(data => {
       console.log(data)
     })
 
-    // upbit.ws.Open({ type: 'ticker', codes: ['KRW-BTC'], isOnlySnapshot: true }, () => {
+    // upbit_ws.Open({ type: 'ticker', codes: ['KRW-BTC'], isOnlySnapshot: true }, () => {
     //   console.log('upbit socket connected.')
     // })
 
-    // upbit.ws.OnMessage(data => {
+    // upbit_ws.OnMessage(data => {
     //   console.log(data)
     // })
 
-    // upbit.ws.OnClose(() => {
+    // upbit_ws.OnClose(() => {
     //   console.log('closed.')
     // })
 

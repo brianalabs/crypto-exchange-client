@@ -1,12 +1,13 @@
 {
-  "name": "node-upbit",
-  "description": "Node.js client for using Upbit API",
-  "version": "0.1.0",
+  "name": "upbit-client",
+  "description": "Javascript client for Upbit.com Open API.",
+  "version": "0.2.0",
   "author": "Donghyun Kim <peterkimzz69@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/peterkimzz/node-upbit.git"
+    "url": "https://github.com/peterkimzz/upbit-client.git"
   },
+  "private": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -17,7 +18,7 @@
     "dev": "ts-node test.ts",
     "start": "node dist/test.js",
     "build": "rimraf dist && node_modules/.bin/tsc",
-    "publish": "yarn build && npm publish"
+    "publish": "yarn build && npm publish --access=public"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^8.5.0",
