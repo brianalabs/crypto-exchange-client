@@ -1,7 +1,7 @@
 {
   "name": "upbit-client",
   "description": "Javascript client for Upbit.com Open API.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Donghyun Kim <peterkimzz69@gmail.com>",
   "repository": {
     "type": "git",
