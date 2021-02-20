@@ -45,6 +45,7 @@ export interface UpbitSocketDefaultResponse {
   acc_trade_price_24h: number
   acc_trade_volume_24h: number
   stream_type: string
+
 }
 export interface UpbitSocketSimpleResponse {
   ty: string

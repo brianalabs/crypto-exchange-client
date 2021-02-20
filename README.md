@@ -24,8 +24,8 @@ Visit [here](https://upbit.com/service_center/open_api_guide?__cf_chl_jschl_tk__
 ```js
 import { Upbit } from 'upbit-client'
 const upbit = new Upbit({ 
-  access_key: '', // required
-  secret_key: '', // required
+  access_key: '',
+  secret_key: '',
 })
 
 const codes = await upbit.GetMarketCodes()

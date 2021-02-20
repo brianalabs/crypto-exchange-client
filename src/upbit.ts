@@ -170,17 +170,19 @@ export class Upbit {
   private readonly secret_key: string
   private http: AxiosInstance
 
-  constructor(auth: { access_key: string; secret_key: string }) {
+  constructor(auth: { access_key?: string; secret_key?: string }) {
     /** Keys */
-    this.access_key = auth.access_key
-    this.secret_key = auth.secret_key
+    this.access_key = auth.access_key || ''
+    this.secret_key = auth.secret_key || ''
 
     /** HTTP Request */
     this.http = axios.create({ baseURL: 'https://api.upbit.com' })
     this.http.interceptors.request.use((value: AxiosRequestConfig) => {
-      const token = value.data ? this.GenerateToken(value.data) : this.GenerateToken()
-
-      value.headers['Authorization'] = `Bearer ${token}`
+      if (this.access_key && this.secret_key) {
+        const token = value.data ? this.GenerateToken(value.data) : this.GenerateToken()
+  
+        value.headers['Authorization'] = `Bearer ${token}`
+      }
 
       return value
     })

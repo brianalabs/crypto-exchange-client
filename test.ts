@@ -16,17 +16,18 @@ async function Init() {
       secret_key: process.env.UPBIT_SECRET_KEY as string
     })
 
-    const marketCodes = await upbit.GetMarketCodes()
-    const codes = marketCodes.map((code) => code.market)
+    // const marketCodes = await upbit.GetMarketCodes()
+    // console.log(marketCodes)
+    // const codes = marketCodes.map((code) => code.market)
 
-    const upbit_ws = new UpbitWebSocket()
+    // const upbit_ws = new UpbitWebSocket()
 
-    upbit_ws.Open({ type: 'ticker', codes }, () => {
-      console.log('opened')
-    })
-    upbit_ws.OnMessage(data => {
-      console.log(data)
-    })
+    // upbit_ws.Open({ type: 'ticker', codes }, () => {
+    //   console.log('opened')
+    // })
+    // upbit_ws.OnMessage(data => {
+    //   console.log(data)
+    // })
 
     // upbit_ws.Open({ type: 'ticker', codes: ['KRW-BTC'], isOnlySnapshot: true }, () => {
     //   console.log('upbit socket connected.')
@@ -53,8 +54,8 @@ async function Init() {
     // console.log(marketCodes)
 
     /** Order Chance */
-    // const order = await upbit.GetOrderChance("KRW-BTC");
-    // console.log(order);
+    const order = await upbit.GetOrderChance("KRW-BTC");
+    console.log(order);
 
     /** Wallet status */
     // const wallet = await upbit.GetStatusWallet()
