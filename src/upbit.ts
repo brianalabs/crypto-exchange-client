@@ -109,7 +109,7 @@ export interface UpbitOrderDetail extends UpbitOrder {
   ]
 }
 
-export interface UpbitCandle {
+export interface UpbitMiniuteCandle {
   market: string
   candle_date_time_utc: string
   candle_date_time_kst: string
@@ -121,6 +121,48 @@ export interface UpbitCandle {
   candle_acc_trade_price: number
   candle_acc_trade_volume: number
   unit: number
+}
+export interface UpbitDayCandle {
+  market: string
+  candle_date_time_utc: string
+  candle_date_time_kst: string
+  opening_price: number
+  high_price: number
+  low_price: number
+  trade_price: number
+  timestamp: number
+  candle_acc_trade_price: number
+  candle_acc_trade_volume: number
+  prev_closing_price: number
+  change_price: number
+  change_rate: number
+  converted_trade_price?: string
+}
+export interface UpbitWeekCandle {
+  market: string
+  candle_date_time_utc: string
+  candle_date_time_kst: string
+  opening_price: number
+  high_price: number
+  low_price: number
+  trade_price: number
+  timestamp: number
+  candle_acc_trade_price: number
+  candle_acc_trade_volume: number
+  first_day_of_period: string
+}
+export interface UpbitMonthCandle {
+  market: string
+  candle_date_time_utc: string
+  candle_date_time_kst: string
+  opening_price: number
+  high_price: number
+  low_price: number
+  trade_price: number
+  timestamp: number
+  candle_acc_trade_price: number
+  candle_acc_trade_volume: number
+  first_day_of_period: string
 }
 
 export interface UpbitTrade {
@@ -180,9 +222,11 @@ export class Upbit {
     this.http.interceptors.request.use((value: AxiosRequestConfig) => {
       if (this.access_key && this.secret_key) {
         const token = value.data ? this.GenerateToken(value.data) : this.GenerateToken()
-  
+
         value.headers['Authorization'] = `Bearer ${token}`
       }
+
+      console.log(value.url)
 
       return value
     })
@@ -428,8 +472,9 @@ export class Upbit {
     return this.http.get('/v1/orders?' + qs.stringify(data), { data })
   }
 
-  public GetCandleByMinute(data: { market: string; unit?: number; to?: string; count?: number }): Promise<UpbitCandle[]> {
+  public GetCandleByMinute(data: { market: string; unit: number; to?: string; count?: number }): Promise<UpbitMiniuteCandle[]> {
     const payload: { [key: string]: any } = {
+      unit: data.unit || 1,
       market: data.market,
       count: data.count || 1
     }
@@ -446,14 +491,52 @@ export class Upbit {
       default:
         throw new Error('Invalid unit.')
     }
-    if (data.count) {
-      if (data.count > 200) {
-        throw new Error('Invalid count.')
-      }
+
+    if (data.to) {
+      payload.to = data.to
     }
-    if (data.to) [(payload.to = data.to)]
 
     return this.http.get(`/v1/candles/minutes/${data.unit || 1}?${qs.stringify(data)}`, { data })
+  }
+
+  public GetCandleByDay(data: { market: string; to?: string; count?: number; convertingPriceUnit?: string }): Promise<UpbitDayCandle[]> {
+    const payload: { [key: string]: any } = {
+      market: data.market,
+      count: data.count || 1,
+      convertingPriceUnit: data.convertingPriceUnit || 'KRW'
+    }
+
+    if (data.to) {
+      payload.to = data.to
+    }
+
+    return this.http.get(`/v1/candles/days?${qs.stringify(data)}`)
+  }
+
+  public GetCandleByWeek(data: { market: string; to?: string; count?: number }): Promise<UpbitWeekCandle[]> {
+    const payload: { [key: string]: any } = {
+      market: data.market,
+      count: data.count || 1
+    }
+
+    if (data.to) {
+      payload.to = data.to
+    }
+
+    return this.http.get(`/v1/candles/weeks?${qs.stringify(data)}`)
+  }
+
+  public GetCandleByMonth(data: { market: string; to?: string; count?: number }): Promise<UpbitMonthCandle[]> {
+    const payload: { [key: string]: any } = {
+      market: data.market,
+      count: data.count || 1
+    }
+
+    if (data.to) {
+      payload.to = data.to
+    }
+
+    return this.http.get(`/v1/candles/months?${qs.stringify(data)}`)
   }
 
   /**

@@ -54,14 +54,15 @@ async function Init() {
     // console.log(marketCodes)
 
     /** Order Chance */
-    const order = await upbit.GetOrderChance("KRW-BTC");
-    console.log(order);
+    // const order = await upbit.GetOrderChance("KRW-BTC");
+    // console.log(order);
 
     /** Wallet status */
     // const wallet = await upbit.GetStatusWallet()
     // console.log(wallet)
 
     /** Candle */
+    /** Minute */
     // const candles = await upbit.GetCandleByMinute({ count: 200, unit: 15, market: 'KRW-BTC', to: dayjs().subtract(3, 'day').format('YYYY-MM-DDTHH:mm:ss.SSSZ') }) // '2021-01-01T09:00:00.000+00:00'
     // console.log(candles)
     // const candles = await upbit.GetCandleByMinute({
@@ -71,6 +72,12 @@ async function Init() {
     //   // to: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
     // })
     // Log(candles)
+    /** Day */
+    // const candles = await upbit.GetCandleByDay({ count: 200, market: 'KRW-BTT', to: '2020-12-12 10:00:00' })
+    /** Week */
+    // const candles = await upbit.GetCandleByWeek({ count: 98, market: 'KRW-BTT', to: '2020-12-12 10:00:00' })
+    /** Month */
+    // const candles = await upbit.GetCandleByMonth({ count: 24, market: 'KRW-BTT', to: '2020-12-12 10:00:00' })
 
     /** Order */
     // const order = await upbit.Order({ market: 'KRW-BTC', side: 'ask', volume: '10', ord_type: 'market' })
