@@ -226,8 +226,6 @@ export class Upbit {
         value.headers['Authorization'] = `Bearer ${token}`
       }
 
-      console.log(value.url)
-
       return value
     })
     this.http.interceptors.response.use(
